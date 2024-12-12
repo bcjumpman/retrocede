@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+
+{% extends "base.html" %} {% block content %}
+<h1>Welcome, {{ user.username }}</h1>
+<h2>Your Portfolio</h2>
+<table>
+  <tr>
+    <th>Stock</th>
+    <th>Quantity</th>
+    <th>Price</th>
+  </tr>
+  {% for stock in user.portfolio %}
+  <tr>
+    <td>{{ stock.stock }}</td>
+    <td>{{ stock.quantity }}</td>
+    <td>{{ stock.price }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}
