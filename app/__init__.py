@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from dotenv import load_dotenv
 from flask_bcrypt import Bcrypt
+from flask_migrate import Migrate
 
 # Load environment variables
 load_dotenv()
@@ -24,6 +25,7 @@ db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'routes.login'
+migrate = Migrate(app, db)
 
 # Import and register routes
 from app.routes import bp as routes_bp

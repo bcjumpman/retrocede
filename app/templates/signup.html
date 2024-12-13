@@ -1,22 +1,93 @@
 <!DOCTYPE html>
 
 {% extends "base.html" %} {% block content %}
-<div class="container">
-  <h1>Signup</h1>
-  <form method="POST" action="{{ url_for('routes.signup') }}">
-    {{ form.hidden_tag() }}
-    <div>
-      {{ form.username.label }} {{ form.username(class_="form-control") }}
-    </div>
-    <div>{{ form.email.label }} {{ form.email(class_="form-control") }}</div>
-    <div>
-      {{ form.password.label }} {{ form.password(class_="form-control") }}
-    </div>
-    <div>
-      {{ form.confirm_password.label }} {{
-      form.confirm_password(class_="form-control") }}
-    </div>
-    <div>{{ form.submit(class_="btn btn-primary") }}</div>
-  </form>
-</div>
+<h2>Sign Up</h2>
+<form id="signup-form" method="POST">
+  {{ form.hidden_tag() }}
+  <div>
+    {{ form.username.label }} {{ form.username(size=32) }}
+    <span id="username-error" class="error"></span>
+  </div>
+  <div>
+    {{ form.email.label }} {{ form.email(size=32) }}
+    <span id="email-error" class="error"></span>
+  </div>
+  <div>
+    {{ form.password.label }} {{ form.password(size=32) }}
+    <span id="password-error" class="error"></span>
+  </div>
+  <div>
+    {{ form.confirm_password.label }} {{ form.confirm_password(size=32) }}
+    <span id="confirm-password-error" class="error"></span>
+  </div>
+  <div>
+    <button type="submit" class="btn-primary">Sign Up</button>
+  </div>
+</form>
+
+<script>
+  document
+    .getElementById("signup-form")
+    .addEventListener("submit", function (e) {
+      // Initialize error flag
+      let hasErrors = false;
+
+      // Validate username
+      const username = document.getElementById("username");
+      const usernameError = document.getElementById("username-error");
+      if (!username.value.trim()) {
+        usernameError.textContent = "Username is required.";
+        hasErrors = true;
+      } else {
+        usernameError.textContent = "";
+      }
+
+      // Validate email
+      const email = document.getElementById("email");
+      const emailError = document.getElementById("email-error");
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!email.value.trim()) {
+        emailError.textContent = "Email is required.";
+        hasErrors = true;
+      } else if (!emailRegex.test(email.value)) {
+        emailError.textContent = "Enter a valid email address.";
+        hasErrors = true;
+      } else {
+        emailError.textContent = "";
+      }
+
+      // Validate password
+      const password = document.getElementById("password");
+      const passwordError = document.getElementById("password-error");
+      if (!password.value.trim()) {
+        passwordError.textContent = "Password is required.";
+        hasErrors = true;
+      } else if (password.value.length < 6) {
+        passwordError.textContent = "Password must be at least 6 characters.";
+        hasErrors = true;
+      } else {
+        passwordError.textContent = "";
+      }
+
+      // Validate confirm password
+      const confirmPassword = document.getElementById("confirm_password");
+      const confirmPasswordError = document.getElementById(
+        "confirm-password-error"
+      );
+      if (!confirmPassword.value.trim()) {
+        confirmPasswordError.textContent = "Please confirm your password.";
+        hasErrors = true;
+      } else if (password.value !== confirmPassword.value) {
+        confirmPasswordError.textContent = "Passwords do not match.";
+        hasErrors = true;
+      } else {
+        confirmPasswordError.textContent = "";
+      }
+
+      // Prevent form submission if there are errors
+      if (hasErrors) {
+        e.preventDefault();
+      }
+    });
+</script>
 {% endblock %}

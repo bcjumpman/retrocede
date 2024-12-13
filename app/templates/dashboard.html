@@ -1,20 +1,154 @@
-<!DOCTYPE html>
-
 {% extends "base.html" %} {% block content %}
-<h1>Welcome, {{ user.username }}</h1>
-<h2>Your Portfolio</h2>
-<table>
-  <tr>
-    <th>Stock</th>
-    <th>Quantity</th>
-    <th>Price</th>
-  </tr>
-  {% for stock in user.portfolio %}
-  <tr>
-    <td>{{ stock.stock }}</td>
-    <td>{{ stock.quantity }}</td>
-    <td>{{ stock.price }}</td>
-  </tr>
-  {% endfor %}
-</table>
+<div class="container">
+  <h1>Welcome, {{ user.username }}</h1>
+
+  <h2>Your Portfolio</h2>
+  <table class="portfolio-table">
+    <tr>
+      <th>Stock</th>
+      <th>Quantity</th>
+      <th>Price</th>
+    </tr>
+    {% for stock in user.portfolio %}
+    <tr>
+      <td>{{ stock.stock }}</td>
+      <td>{{ stock.quantity }}</td>
+      <td>{{ stock.price }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <h2>Search Stock Data</h2>
+  <form id="stock-form">
+    <label for="symbol">Stock Symbol:</label>
+    <input
+      type="text"
+      id="symbol"
+      name="symbol"
+      required
+      placeholder="Enter stock symbol"
+    />
+    <button type="submit">Search</button>
+  </form>
+
+  <h2>Buy Stocks</h2>
+  <form method="POST" action="/buy">
+    <label for="buy-stock">Stock Symbol:</label>
+    <input
+      type="text"
+      id="buy-stock"
+      name="stock"
+      required
+      placeholder="Enter stock symbol"
+    />
+
+    <label for="buy-quantity">Quantity:</label>
+    <input
+      type="number"
+      id="buy-quantity"
+      name="quantity"
+      required
+      placeholder="Enter quantity"
+    />
+
+    <label for="buy-price">Price:</label>
+    <input
+      type="number"
+      step="0.01"
+      id="buy-price"
+      name="price"
+      required
+      placeholder="Enter price per share"
+    />
+
+    <button type="submit">Buy</button>
+  </form>
+
+  <h2>Sell Stocks</h2>
+  <form method="POST" action="/sell">
+    <label for="sell-stock">Stock Symbol:</label>
+    <input
+      type="text"
+      id="sell-stock"
+      name="stock"
+      required
+      placeholder="Enter stock symbol"
+    />
+
+    <label for="sell-quantity">Quantity:</label>
+    <input
+      type="number"
+      id="sell-quantity"
+      name="quantity"
+      required
+      placeholder="Enter quantity"
+    />
+
+    <label for="sell-price">Price:</label>
+    <input
+      type="number"
+      step="0.01"
+      id="sell-price"
+      name="price"
+      required
+      placeholder="Enter price per share"
+    />
+
+    <button type="submit">Sell</button>
+  </form>
+
+  <div id="stock-data" class="stock-data-container">
+    <!-- Stock data will be dynamically inserted here -->
+  </div>
+</div>
+
+<script>
+  // Handle stock search
+  document
+    .getElementById("stock-form")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      // Get the stock symbol from the input
+      const symbol = document.getElementById("symbol").value;
+
+      // Fetch data from the stock API endpoint
+      const response = await fetch(`/stock/${symbol}`);
+      const data = await response.json();
+
+      // Select the stock data div for displaying results
+      const stockDataDiv = document.getElementById("stock-data");
+
+      // Handle the response
+      if (response.ok) {
+        if (data.error) {
+          stockDataDiv.innerHTML = `<p style="color: red;">${data.error}</p>`;
+        } else {
+          stockDataDiv.innerHTML = `
+      <div class="stock-card">
+        <h3>${data.symbol}</h3>
+        <p><strong>Date:</strong> ${data.date}</p>
+        <p><strong>Open:</strong> $${data.open.toFixed(2)}</p>
+        <p><strong>High:</strong> $${data.high.toFixed(2)}</p>
+        <p><strong>Low:</strong> $${data.low.toFixed(2)}</p>
+        <p><strong>Close:</strong> $${data.close.toFixed(2)}</p>
+        <p><strong>Volume:</strong> ${data.volume}</p>
+        <hr>
+        <p><strong>Average High (Last 5 Days):</strong> $${data.avg_high.toFixed(
+          2
+        )}</p>
+        <p><strong>Average Low (Last 5 Days):</strong> $${data.avg_low.toFixed(
+          2
+        )}</p>
+        <p><strong>Average Volume (Last 5 Days):</strong> ${Math.round(
+          data.avg_volume
+        )}</p>
+      </div>
+    `;
+        }
+      } else {
+        stockDataDiv.innerHTML = `<p style="color: red;">Error: Unable to fetch stock data.</p>`;
+      }
+    });
+</script>
 {% endblock %}
