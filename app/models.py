@@ -10,12 +10,15 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
+    balance = db.Column(db.Float, default=1000.0, nullable=False)
     portfolio = db.relationship('Portfolio', backref='owner', lazy=True)
+
 
 class Portfolio(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     stock = db.Column(db.String(10), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Float, nullable=False, default=0.0)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 class Transaction(db.Model):

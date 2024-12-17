@@ -8,33 +8,59 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='style.css') }}"
     />
+
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='favicon-32x32.png') }}"
+      type="image/x-icon"
+    />
   </head>
   <body>
     <nav>
-      <a href="{{ url_for('routes.landing') }}">Home</a>
+      <a href="{{ url_for('routes.landing') }}">🏠 Home</a>
+      <a href="{{ url_for('routes.learn') }}">📚 Learn</a>
       {% if current_user.is_authenticated %}
-      <a href="{{ url_for('routes.dashboard') }}">Dashboard</a>
-      <a href="{{ url_for('routes.logout') }}">Logout</a>
+      <a href="{{ url_for('routes.dashboard') }}">📊 Dashboard</a>
+      <a href="{{ url_for('routes.logout') }}">🚪 Logout</a>
       {% else %}
-      <a href="{{ url_for('routes.login') }}">Login</a>
-      <a href="{{ url_for('routes.signup') }}">Signup</a>
+      <a href="{{ url_for('routes.login') }}">🔐 Login</a>
+      <a href="{{ url_for('routes.signup') }}">📋 Signup</a>
+
       {% endif %}
     </nav>
+
+    <!-- Flash messages -->
+    <div id="flash-messages" style="display: none">
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %}
+      <ul id="messages" style="display: none">
+        {% for category, message in messages %}
+        <li data-category="{{ category }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %} {% endwith %}
+    </div>
+
+    <!-- Main content block -->
     <div class="container">{% block content %}{% endblock %}</div>
 
-    {% with messages = get_flashed_messages(with_categories=true) %} {% if
-    messages %}
-    <ul class="flash-messages">
-      {% for category, message in messages %}
-      <li class="{{ category }}">{{ message }}</li>
-      {% endfor %}
-    </ul>
-    {% endif %} {% endwith %}
+    <!-- JavaScript to render flash messages -->
+    <script>
+      window.addEventListener("DOMContentLoaded", () => {
+        const flashMessages = document.querySelectorAll("#messages li");
+        flashMessages.forEach((msg) => {
+          const category = msg.getAttribute("data-category");
+          const message = msg.textContent;
+
+          if (category === "success") {
+            alert(`✅ Success: ${message}`);
+          } else if (category === "danger") {
+            alert(`❌ Error: ${message}`);
+          } else {
+            alert(`ℹ️ Info: ${message}`);
+          }
+        });
+      });
+    </script>
   </body>
 </html>
-
-<!-- <p>Is authenticated: {{ current_user.is_authenticated }}</p>
-<p>
-  User: {{ current_user.username if current_user.is_authenticated else 'Guest'
-  }}
-</p> -->
