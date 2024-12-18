@@ -18,7 +18,7 @@ Retrocede is a fun and educational stock trading simulation app designed to teac
 - **Database:** SQLite
 - **APIs:** Alpha Vantage, and Yahoo Finance
 - **Machine Learning:** Prophet for stock performance prediction
-- **Authentication**: Google Authentication integration
+- **Authentication**: Coming soon Google Authentication integration
 
 ## 🚀 Get Started
 1. Prerequisites
