@@ -1,10 +1,11 @@
 import os
-from flask import Blueprint, render_template, redirect, request, url_for, flash, jsonify
+from flask import Blueprint, app, render_template, redirect, request, url_for, flash, jsonify
 from flask_login import login_required, current_user, login_user, logout_user
+from flask_dance.contrib.google import make_google_blueprint, google
 import requests
 from app.models import User, Portfolio, Transaction
 from app import db, bcrypt
-from app.forms import SignupForm
+from app.forms import SignupForm, LoginForm
 from dotenv import load_dotenv
 # from app.routes import bp
 import re
@@ -25,9 +26,10 @@ def landing():
 # Login route
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
+    form = LoginForm()
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
         user = User.query.filter_by(email=email).first()
 
         # Verify the password hash
@@ -36,7 +38,31 @@ def login():
             return redirect(url_for('routes.dashboard'))
 
         flash('Invalid email or password', 'danger')
-    return render_template('login.html')
+    return render_template('login.html', form=form)
+
+@bp.route("/login/google")
+def google_login():
+    if not google.authorized:
+        return redirect(url_for("google.login"))
+    resp = google.get("/oauth2/v2/userinfo")
+    app.logger.debug(f"Google user info response: {resp.json()}")
+    assert resp.ok, resp.text
+    user_info = resp.json()
+
+    # Extract user details
+    email = user_info["email"]
+    username = user_info.get("name", email.split("@")[0])
+
+    # Check if user exists, else create a new user
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        user = User(username=username, email=email, balance=1000.0)
+        db.session.add(user)
+        db.session.commit()
+
+    # Log the user in
+    login_user(user)
+    return redirect(url_for("routes.dashboard"))
 
 
 # Signup route

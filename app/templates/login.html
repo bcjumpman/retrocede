@@ -1,19 +1,32 @@
-<!DOCTYPE html>
 {% extends "base.html" %} {% block content %}
-<div class="container">
-  <h1>Login</h1>
-  <form method="POST" action="{{ url_for('routes.login') }}">
-    <div>
-      <label for="email">Email:</label>
-      <input type="email" id="email" name="email" required />
-    </div>
-    <div>
-      <label for="password">Password:</label>
-      <input type="password" id="password" name="password" required />
-    </div>
-    <div>
-      <button type="submit">Login</button>
-    </div>
-  </form>
-</div>
+<h2>Login</h2>
+<form method="POST">
+  {{ form.hidden_tag() }}
+  <div>
+    {{ form.email.label }} {{ form.email(size=32) }} {% for error in
+    form.email.errors %}
+    <span style="color: red">{{ error }}</span>
+    {% endfor %}
+  </div>
+  <div>
+    {{ form.password.label }} {{ form.password(size=32) }} {% for error in
+    form.password.errors %}
+    <span style="color: red">{{ error }}</span>
+    {% endfor %}
+  </div>
+  <div>
+    <button type="submit">Login</button>
+  </div>
+</form>
+
+<hr />
+<!-- <h3>Or Login with Google</h3>
+<a href="{{ url_for('google.login') }}" class="google-login-btn">
+  <img
+    src="{{ url_for('static', filename='google-logo.png') }}"
+    alt="Google Logo"
+  />
+  Log in with Google
+</a> -->
+
 {% endblock %}
