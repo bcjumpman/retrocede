@@ -41,9 +41,9 @@ def create_app():
     # Import models (ensure db.Model is initialized)
     from app.models import User
 
-    # @login_manager.user_loader
-    # def load_user(user_id):
-    #     return User.query.get(int(user_id))
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
 
     # Setup Google Auth Blueprint
     google_bp = make_google_blueprint(
